@@ -125,10 +125,10 @@ public class MoneyStoriesPlugin extends CordovaPlugin {
                             model.period = ((StoryLineModel) item.getItem()).getPeriod().name();
                             model.read = ((StoryLineModel) item.getItem()).getRead();
                             model.startDate = ((StoryLineModel) item.getItem()).getStartDate().toString();
-
                             stories.add(model);
                         }
                     }
+                    Collections.sort(stories, Comparator.comparing(story -> story.startDate()));
                     String resultJson = new Gson().toJson(stories);
                     Log.v("MoneyStoriesPlugin", " >>> Result Stories: "+ resultJson);
                     callbackContext.success(resultJson);
