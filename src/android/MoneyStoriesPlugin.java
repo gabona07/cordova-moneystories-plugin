@@ -28,6 +28,7 @@ import hu.wup.moneystories.ui.base.RowViewModel;
 import hu.wup.moneystories.ui.main.MoneyStoriesActivity;
 import hu.wup.moneystories.ui.storyBar.StoryBarView;
 import hu.wup.moneystories.ui.storyBar.StoryBarViewModel;
+import hu.wup.moneystories.ui.storyLine.StoryLineViewModel;
 
 
 public class MoneyStoriesPlugin extends CordovaPlugin {
@@ -108,8 +109,10 @@ public class MoneyStoriesPlugin extends CordovaPlugin {
     }
 
     private void returnInitStories() {
-        StoryBarViewModel viewModel = initViewModel();
-        Log.v("MoneyStoriesPlugin", " >>> ViewModel initialised: "+ viewModel.toString());
+        StoryBarViewModel storyBarViewModel = initStoryBarViewModel();
+        StoryLineViewModel storyLineViewModel = initStoryLineViewModel();
+        Log.v("MoneyStoriesPlugin", " >>> StoryBarViewModel initialised: "+ storyBarViewModel.toString());
+        Log.v("MoneyStoriesPlugin", " >>> StoryLineViewModel initialised: "+ storyLineViewModel.toString());
         Observer<List<RowViewModel<StoryLineBaseModel>>> result = items -> {
 
             if (items.isEmpty()) {
@@ -140,8 +143,8 @@ public class MoneyStoriesPlugin extends CordovaPlugin {
         };
 
         handler.post(() -> {
-            viewModel.initStoryBar();
-            viewModel.getStoryBarItems().observe(cordova.getActivity(), result);
+            storyBarViewModel.initStoryBar();
+            storyBarViewModel.getStoryBarItems().observe(cordova.getActivity(), result);
         });
     }
 
@@ -245,7 +248,7 @@ public class MoneyStoriesPlugin extends CordovaPlugin {
         }
     }
 
-    private StoryBarViewModel initViewModel() {
+    private StoryBarViewModel initStoryBarViewModel() {
         Log.v("MoneyStoriesPlugin", " >>> AppContainer "+AppContainer.Companion.getInstance());
         return new StoryBarViewModel(AppContainer.Companion.getInstance().getUtilModule().getGson(),
                                      AppContainer.Companion.getInstance().getResourceModule().getUpdateResourcesUseCase(),
@@ -254,5 +257,18 @@ public class MoneyStoriesPlugin extends CordovaPlugin {
                                      AppContainer.Companion.getInstance().getConfigModule().getGetConfigurationUseCase(),
                                      AppContainer.Companion.getInstance().getDeviceInfoModule().getGetDeviceInfoAnalyticsDataUseCase(),
                                      AppContainer.Companion.getInstance().getAnalyticsModule().getStoreAnalyticsDataUseCase());
+    }
+
+    private StoryLineViewModel initStoryLineViewModel() {
+        return new StoryLineViewModel(
+                AppContainer.Companion.getInstance().getResourceModule().getGetResourcesUseCase(),
+                AppContainer.Companion.getInstance().getStoryLineModule().getGetStoriesUseCase(),
+                AppContainer.Companion.getInstance().getStoryLineModule().getReadStoryLineUseCase(),
+                AppContainer.Companion.getInstance().getStoryLineModule().getReadMoreStoryLineUseCase(),
+                AppContainer.Companion.getInstance().getMoreModule().getReadStoryBarStoryLineUseCase(),
+                AppContainer.Companion.getInstance().getRememberStepModule().getStoreRememberStepUseCaseUseCase(),
+                AppContainer.Companion.getInstance().getRememberStepModule().getGetRememberStepUseCase(),
+                AppContainer.Companion.getInstance().getConfigModule().getGetScreenTimeUseCase(),
+                AppContainer.Companion.getInstance().getAnalyticsModule().getStoreAnalyticsDataUseCase());
     }
 }
